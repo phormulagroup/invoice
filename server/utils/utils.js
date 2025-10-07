@@ -3,26 +3,18 @@ const dayjs = require("dayjs");
 const qs = require("querystring");
 const jwt = require("jsonwebtoken");
 
-const BASE_URL = "https://api18.toconline.pt";
-const CLIENT_ID = "pt515028533_c375481-a8693acaceda7018";
-const CLIENT_SECRET = "88b5b7efdec304f66cf3116e6198c5d0";
-const REDIRECT_URI = "https://oauth.pstmn.io/v1/callback";
-const AUTH_URL = "https://app18.toconline.pt/oauth/auth";
-const TOKEN_URL = "https://app18.toconline.pt/oauth/token";
-const SCOPE = "commercial";
-
 const privateJwtKey = "phormula_invoice_api_secret_key_!@#$%&*()_+1234567890-=qwertyuiop";
 
-async function getAuthorizationCode() {
+async function getAuthorizationCode(c) {
   const params = {
-    client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    client_id: c.CLIENT_ID,
+    redirect_uri: c.REDIRECT_URI,
     response_type: "code",
-    scope: SCOPE,
+    scope: c.SCOPE,
   };
 
   try {
-    const response = await axios.get(`${AUTH_URL}?${qs.stringify(params)}`, {
+    const response = await axios.get(`${c.AUTH_URL}?${qs.stringify(params)}`, {
       maxRedirects: 0,
       validateStatus: (status) => status >= 200 && status < 400, // follow only up to 302
     });
@@ -43,14 +35,14 @@ async function getAuthorizationCode() {
   }
 }
 
-async function exchangeTokenForTokens(code) {
+async function exchangeTokenForTokens(code, c) {
   return new Promise(async (resolve, reject) => {
-    const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+    const credentials = Buffer.from(`${c.CLIENT_ID}:${c.CLIENT_SECRET}`).toString("base64");
 
     const data = {
       grant_type: "authorization_code",
       code,
-      scope: SCOPE,
+      scope: c.SCOPE,
     };
 
     try {
@@ -74,11 +66,11 @@ async function exchangeTokenForTokens(code) {
 
 module.exports = {
   //Get Authorization Code and Tokens
-  auth: function (data) {
+  auth: function (c) {
     return new Promise(async (resolve, reject) => {
       try {
-        const code = await getAuthorizationCode();
-        const token = await exchangeTokenForTokens(code);
+        const code = await getAuthorizationCode(c);
+        const token = await exchangeTokenForTokens(c, code);
         resolve(token);
       } catch (err) {
         console.log(err);
@@ -88,7 +80,7 @@ module.exports = {
   },
 
   //Create Invoice
-  create: function (obj, token) {
+  create: function (obj, token, c) {
     return new Promise(async (resolve, reject) => {
       try {
         const data = {
@@ -106,7 +98,7 @@ module.exports = {
           lines: obj.items.map((p) => ({ item_type: "Product", description: p.name, quantity: p.quantity, unit_price: p.total })),
         };
 
-        const response = await axios.post(`${BASE_URL}/api/v1/commercial_sales_documents`, data, {
+        const response = await axios.post(`${c.BASE_URL}/api/v1/commercial_sales_documents`, data, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

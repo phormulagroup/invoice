@@ -5,7 +5,7 @@ const compression = require("compression");
 const dayjs = require("dayjs");
 const express = require("express");
 
-const db = require("./database");
+const db = require("./utils/database");
 
 const authRouter = require("./routes/auth");
 const invoiceRouter = require("./routes/invoice");

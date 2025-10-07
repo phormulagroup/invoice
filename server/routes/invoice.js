@@ -4,9 +4,10 @@ const util = require("util");
 
 var router = express.Router();
 
-var db = require("../database");
-const utils = require("../utils");
-const exampleData = require("../example.json");
+var db = require("../utils/database");
+const utils = require("../utils/utils");
+
+const tocOnline = require("../utils/credentials");
 
 router.use((req, res, next) => {
   console.log("---------------------------");
@@ -37,21 +38,23 @@ router.post("/create", async (req, res) => {
   db.getConnection(async (error, conn) => {
     if (error) throw error;
     //const data = req.body?.data ?? exampleData;
-    const data = req.body?.data;
+    const data = req.body;
+    console.log(data);
     try {
       if (
         utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) &&
         data.order.billing.email &&
         data.order.billing.first_name &&
         data.domain &&
+        data.company &&
         data.items.length > 0
       ) {
         console.log("Domain:", data.domain ?? "no domain");
         console.log("E-mail:", data.order.billing.email ?? "no e-mail");
         console.log("Name:", data.order.billing.first_name + " " + data.order.billing.last_name ?? "no name");
 
-        const token = await utils.auth();
-        let finalInvoice = await utils.create(data, token.access_token);
+        const token = await utils.auth(tocOnline[data.company]);
+        let finalInvoice = await utils.create(data, token.access_token, tocOnline[data.company]);
 
         console.log("----------");
         console.log("Invoice created:", data.order.billing.first_name + " " + data.order.billing.last_name ?? "no name");
@@ -59,6 +62,7 @@ router.post("/create", async (req, res) => {
         console.log("Invoice link:", finalInvoice.public_link ?? "no link");
         const query = util.promisify(conn.query).bind(conn);
         const auxData = {
+          company: data.company,
           domain: data.domain,
           email: data.order.billing.email,
           name: data.order.billing.first_name + " " + data.order.billing.last_name,
@@ -76,6 +80,7 @@ router.post("/create", async (req, res) => {
         conn.release();
         console.log("----------");
         console.log("Invalid fields: invalid nif or missing domain, e-mail, name or items");
+        console.log("Company:", data.company ?? "no company");
         console.log("Domain:", data.domain ?? "no domain");
         console.log("E-mail:", data.order.billing.email ?? "no e-mail");
         console.log("Name:", data.order.billing.first_name + " " + data.order.billing.last_name ?? "no name");

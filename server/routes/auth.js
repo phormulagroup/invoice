@@ -5,8 +5,8 @@ const bcrypt = require("bcryptjs");
 
 var router = express.Router();
 
-var db = require("../database");
-const utils = require("../utils");
+var db = require("../utils/database");
+const utils = require("../utils/utils");
 
 router.use((req, res, next) => {
   console.log("---------------------------");
