@@ -15,6 +15,7 @@ const Home = () => {
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [data, setData] = useState([]);
+  const [companies, setCompanies] = useState([]);
 
   useEffect(() => {
     handleGetData();
@@ -25,9 +26,7 @@ const Home = () => {
     axios
       .get(endpoints.invoice.read)
       .then((res) => {
-        console.log(res);
         handlePrepareData(res.data);
-        setData(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -35,9 +34,11 @@ const Home = () => {
       });
   }
 
-  function handlePrepareData(data) {
-    let aux = data.map((item, index) => ({
+  function handlePrepareData(arr) {
+    let aux = arr.map((item, index) => ({
       key: index,
+      created_at: dayjs(item.created_at).format("DD-MM-YYYY HH:mm:ss"),
+      company: item.company,
       domain: item.domain,
       name: item.name,
       email: item.email,
@@ -51,8 +52,10 @@ const Home = () => {
         </a>
       ),
       actions: null,
+      full_data: item,
     }));
 
+    setData(arr);
     setTableData(aux);
     setIsLoading(false);
   }
@@ -83,10 +86,27 @@ const Home = () => {
                 className="mt-[20px]"
                 columns={[
                   {
+                    title: "Data",
+                    dataIndex: "created_at",
+                    key: "created_at",
+                    sort: true,
+                    sortType: "date",
+                  },
+                  {
+                    title: "Empresa",
+                    dataIndex: "company",
+                    key: "company",
+                    filters: data
+                      .map((item, index) => ({ text: item.company, value: item.company }))
+                      .filter((value, index, self) => index === self.findIndex((t) => t.value === value.text)),
+                  },
+                  {
                     title: "Domínio",
                     dataIndex: "domain",
                     key: "domain",
-                    filters: data.map((item) => ({ text: item.domain, value: item.domain })),
+                    filters: data
+                      .map((item, index) => ({ text: item.domain, value: item.domain }))
+                      .filter((value, index, self) => index === self.findIndex((t) => t.value === value.text)),
                   },
                   {
                     title: "Nome",

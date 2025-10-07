@@ -80,7 +80,7 @@ module.exports = {
   },
 
   //Create Invoice
-  create: function (obj, token, c) {
+  create: function (obj, token, c, tax) {
     return new Promise(async (resolve, reject) => {
       try {
         const data = {
@@ -91,11 +91,12 @@ module.exports = {
           customer_business_name: obj.order.billing.first_name + " " + obj.order.billing.last_name,
           date: dayjs().format("YYYY-MM-DD"),
           payment_mechanism: "MO",
-          vat_included_prices: true,
+          vat_included_prices: obj.tax ? false : true,
           operation_country: obj.order.billing.country ?? "PT",
           currency_iso_code: obj.order.currency,
-          apply_retention_when_paid: true,
-          lines: obj.items.map((p) => ({ item_type: "Product", description: p.name, quantity: p.quantity, unit_price: p.total })),
+          lines: obj.tax
+            ? obj.items.map((p) => ({ item_type: "Product", description: p.name, quantity: p.quantity, unit_price: p.total, tax_percentage: tax }))
+            : obj.items.map((p) => ({ item_type: "Product", description: p.name, quantity: p.quantity, unit_price: p.total })),
         };
 
         const response = await axios.post(`${c.BASE_URL}/api/v1/commercial_sales_documents`, data, {

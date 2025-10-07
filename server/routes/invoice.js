@@ -23,7 +23,7 @@ router.get("/read", async (req, res) => {
     if (error) throw error;
     try {
       const query = util.promisify(conn.query).bind(conn);
-      const rows = await query("SELECT * FROM invoice");
+      const rows = await query("SELECT * FROM invoice ORDER BY created_at DESC");
       conn.release();
       res.send(rows);
     } catch (err) {
