@@ -46,7 +46,7 @@ async function exchangeTokenForTokens(code, c) {
     };
 
     try {
-      const response = await axios.post(TOKEN_URL, data, {
+      const response = await axios.post(c.TOKEN_URL, data, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: `Basic ${credentials}`,
@@ -70,7 +70,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       try {
         const code = await getAuthorizationCode(c);
-        const token = await exchangeTokenForTokens(c, code);
+        const token = await exchangeTokenForTokens(code, c);
         resolve(token);
       } catch (err) {
         console.log(err);

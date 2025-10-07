@@ -39,7 +39,6 @@ router.post("/create", async (req, res) => {
     if (error) throw error;
     //const data = req.body?.data ?? exampleData;
     const data = req.body;
-    console.log(data);
     try {
       if (
         utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) &&
