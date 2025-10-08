@@ -71,6 +71,20 @@ router.post("/create", async (req, res) => {
           link: finalInvoice.public_link,
         };
         const insertRow = await query("INSERT INTO invoice SET ?", auxData);
+        if (data.order.billing.email) {
+          const email = await utils.sendEmail({ ...data, id_invoice: finalInvoice.id, link: finalInvoice.public_link });
+          console.log("----------");
+          if (email.rejected.length > 0) {
+            console.log("E-mail:", email.rejected[0]);
+            console.log("E-mail sent: false");
+            console.log("Reason:", email.response);
+            console.log("-------------------------------");
+          } else {
+            console.log("E-mail:", email.accepted[0]);
+            console.log("E-mail sent: true");
+            console.log("-------------------------------");
+          }
+        }
         console.log("----------");
         console.log("Database insert ID:", insertRow.insertId ?? "no id");
         console.log("-------------------------------");
@@ -79,7 +93,7 @@ router.post("/create", async (req, res) => {
       } else {
         conn.release();
         console.log("----------");
-        console.log("Invalid fields: invalid nif or missing domain, e-mail, name or items");
+        console.log("Invalid fields or total is zero: invalid nif or missing domain, e-mail, name or items");
         console.log("Company:", data.company ?? "no company");
         console.log("Domain:", data.domain ?? "no domain");
         console.log("E-mail:", data.order.billing.email ?? "no e-mail");
@@ -89,6 +103,7 @@ router.post("/create", async (req, res) => {
           data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value ?? "no nif",
           `${utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) ? "(valid)" : "(invalid)"}`
         );
+        console.log("Total:", data.order.total ?? "no total");
         console.log("-------------------------------");
         res.send({ message: "Invalid fields" });
       }

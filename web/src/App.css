@@ -29,3 +29,7 @@
   display: flex;
   flex-direction: column;
 }
+
+.ant-radio-button-wrapper-checked {
+  background: #e9f2ff !important;
+}

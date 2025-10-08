@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import endpoints from "./endpoints";
+import { message, notification } from "antd";
 
 export const Context = createContext();
 
@@ -11,6 +12,8 @@ const ContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const navigate = useNavigate();
 
@@ -79,8 +82,10 @@ const ContextProvider = ({ children }) => {
         handleUpdateProfile,
         setIsLoading,
         isLoading,
+        messageApi,
       }}
     >
+      {contextHolder}
       {children}
     </Context.Provider>
   );

@@ -1,7 +1,7 @@
 var express = require("express");
 var dayjs = require("dayjs");
 const util = require("util");
-const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
 const fileUpload = require("express-fileupload");
 
 var router = express.Router();
@@ -11,7 +11,7 @@ var db = require("../utils/database");
 
 router.use((req, res, next) => {
   console.log("---------------------------");
-  console.log("user", req.url, "@", dayjs().format("YYYY-MM-DD hh:mm:ss"));
+  console.log("email", req.url, "@", dayjs().format("YYYY-MM-DD hh:mm:ss"));
   console.log("---------------------------");
   next();
 });
@@ -84,6 +84,62 @@ router.post("/delete", async (req, res) => {
     try {
       const query = util.promisify(conn.query).bind(conn);
       const deletedRow = await query("DELETE FROM email WHERE id = ?", data.id);
+      console.log("Domain:", data.domain ?? "no domain");
+      console.log("SMTP Host:", data.host ?? "no smtp");
+      console.log("----------");
+      conn.release();
+      res.send(deletedRow);
+    } catch (err) {
+      throw err;
+    }
+  });
+});
+
+router.post("/test", (req, res, next) => {
+  console.log("---- TEST E-MAIL SMTP ----");
+
+  try {
+    const data = req.body.data;
+    console.log(data);
+    const transporter = nodemailer.createTransport({
+      host: data.host,
+      port: data.port,
+      secure: data.secure, // true for port 465, false for other ports
+      auth: {
+        user: data.email,
+        pass: data.password,
+      },
+    });
+
+    const mailOptions = {
+      from: `${data.name} <${data.email}>`,
+      to: data.to,
+      subject: "Send test e-mail",
+      text: "Este e-mail foi enviado foi de teste do SMTP",
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err);
+        res.status(400).send(err);
+      } else {
+        res.send(info);
+      }
+    });
+  } catch (err) {
+    throw err;
+  }
+});
+
+router.post("/default", async (req, res) => {
+  console.log("-------------------------------");
+  console.log("----- DEFAULT E-MAIL -----");
+  db.getConnection(async (error, conn) => {
+    if (error) throw error;
+    let data = req.body?.data;
+    try {
+      const query = util.promisify(conn.query).bind(conn);
+      const deletedRow = await query("UPDATE email SET is_default = 1 WHERE id = ?; UPDATE email SET is_default = 0 WHERE id != ?", [data.id, data.id]);
       console.log("Domain:", data.domain ?? "no domain");
       console.log("SMTP Host:", data.host ?? "no smtp");
       console.log("----------");

@@ -35,7 +35,7 @@ function Delete({ data, open, close }) {
       style={{ top: 60 }}
       onCancel={close}
       open={open}
-      title={"Apagar utilizador"}
+      title={"Apagar e-mail"}
       footer={[
         <Button disabled={isButtonLoading} onClick={close}>
           Cancelar

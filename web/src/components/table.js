@@ -90,7 +90,7 @@ const CustomTable = (props) => {
       className={props.className}
       dataSource={props.dataSource}
       pagination={{ position: ["none", "bottomCenter"] }}
-      scroll={{ y: 120 * 5, x: "max-content" }}
+      scroll={{ y: 120 * 5 }}
       columns={props.columns.map((item) => ({
         title: item.title,
         dataIndex: item.dataIndex,

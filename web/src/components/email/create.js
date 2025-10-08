@@ -1,12 +1,16 @@
-import { Row, Col, Button, Input, Select, Radio, Form, notification, Drawer, Switch, ColorPicker, Divider, InputNumber, message } from "antd";
-import { useContext, useState } from "react";
+import { Button, Input, Form, Drawer, Switch, InputNumber, message } from "antd";
+import { useState } from "react";
 import axios from "axios";
+import { DeleteOutlined, FileImageOutlined } from "@ant-design/icons";
+
+import Media from "../media/media";
 
 import config from "../../utils/config";
 import endpoints from "../../utils/endpoints";
 
 function Create({ open, close }) {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [isOpenMedia, setIsOpenMedia] = useState(false);
 
   const [form] = Form.useForm();
 
@@ -35,6 +39,18 @@ function Create({ open, close }) {
     form.resetFields();
   }
 
+  function handleOpenModalMedia() {
+    setIsOpenMedia(true);
+  }
+
+  function handleCloseMedia(response) {
+    if (response) {
+      form.setFieldValue("img", response["img"]);
+    }
+
+    setIsOpenMedia(false);
+  }
+
   return (
     <Drawer
       width={700}
@@ -49,8 +65,38 @@ function Create({ open, close }) {
         <Button onClick={close}>Cancelar</Button>,
       ]}
     >
+      <Media mediaKey={"img"} open={isOpenMedia} close={handleCloseMedia} />
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item name="domain" label="Domínio" rules={[{ required: true, message: "Este é um campo obrigatório" }]}>
+        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues !== currentValues}>
+          {({ getFieldValue }) => (
+            <>
+              <p className="mb-[8px] mt-0 text-[14px]">Imagem</p>
+              <div
+                className="bg-no-repeat bg-center bg-contain border-dashed border-[2px] rounded-[5px] cursor-pointer min-h-[150px]"
+                onClick={handleOpenModalMedia}
+                style={{ backgroundImage: `url(${config.server_ip}/media/${getFieldValue("img")})` }}
+              >
+                {!getFieldValue("img") ? (
+                  <div className="flex justify-center items-center flex-col p-10">
+                    <FileImageOutlined className="text-[30px]" />
+                    <p className="text-[12px] mb-0 mt-2 text-center">Clique aqui para adicionar uma imagem</p>
+                  </div>
+                ) : null}
+              </div>
+
+              <Form.Item name="img" hidden>
+                <Input />
+              </Form.Item>
+              {getFieldValue("img") ? (
+                <div className="flex justify-between mt-2">
+                  <p>{getFieldValue("img")}</p>
+                  <DeleteOutlined onClick={() => form.setFieldValue("img", null)} />
+                </div>
+              ) : null}
+            </>
+          )}
+        </Form.Item>
+        <Form.Item className="mt-[24px]" name="domain" label="Domínio" rules={[{ required: true, message: "Este é um campo obrigatório" }]}>
           <Input size="large" placeholder="host.com" />
         </Form.Item>
         <Form.Item className="mt-[24px]" name="name" label="SMTP Nome" rules={[{ required: true, message: "Este é um campo obrigatório" }]}>

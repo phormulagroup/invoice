@@ -2,6 +2,9 @@ const axios = require("axios");
 const dayjs = require("dayjs");
 const qs = require("querystring");
 const jwt = require("jsonwebtoken");
+const util = require("util");
+const nodemailer = require("nodemailer");
+const db = require("../utils/database");
 
 const privateJwtKey = "phormula_invoice_api_secret_key_!@#$%&*()_+1234567890-=qwertyuiop";
 
@@ -153,6 +156,63 @@ module.exports = {
       jwt.sign(JSON.parse(JSON.stringify(data)), privateJwtKey, { expiresIn: "7d" }, (err, token) => {
         if (err) reject(err);
         resolve(token);
+      });
+    });
+  },
+
+  sendEmail: function (data) {
+    return new Promise((resolve, reject) => {
+      db.getConnection(async (error, conn) => {
+        if (error) throw error;
+        try {
+          const query = util.promisify(conn.query).bind(conn);
+          const rows = await query("SELECT * FROM email WHERE domain = ? OR is_default = 1", data.domain);
+          let filteredSmtp = rows.filter((item) => item.domain === data.domain)[0];
+          const smtpSettings = filteredSmtp ? filteredSmtp : rows.filter((item) => item.is_default === 1)[0];
+
+          const transporter = nodemailer.createTransport({
+            host: smtpSettings.host,
+            port: smtpSettings.port,
+            secure: smtpSettings.secure, // true for port 465, false for other ports
+            auth: {
+              user: smtpSettings.email,
+              pass: smtpSettings.password,
+            },
+          });
+
+          const html = `<table style="width: 100%; max-width: 600px; margin: auto">
+              <tr>
+                <td style="text-align: center; vertical-align: middle;"><img style="max-height:100px" src="https://invoiceapi.phormuladev.com/media/${smtpSettings.img}" /></td>
+              </tr>
+              <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                  <p>Exmo. Senhor(a),</p>
+                  <p>Neste e-mail segue a fatura nº${data.id_invoice}, de acordo com o pagamento realizado, para a consultar carregue no botão abaixo.</p>
+                  <a href="${data.link}" target="_blank" class="v-button" style="box-sizing: border-box;display: inline-block;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #3AAEE0; border-radius: 4px;-webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
+                    <span style="display:block;padding:10px 20px;line-height:120%;"><span style="line-height: 16.8px;">Fatura</span></span>
+                  </a>
+                  <p>Melhores cumprimentos,</p>
+                  <p>${smtpSettings.name}</p>
+                </td>
+              </tr>
+            </table>`;
+
+          const mailOptions = {
+            from: `${smtpSettings.name} <${smtpSettings.email}>`,
+            to: data.order.billing.email,
+            subject: `${smtpSettings.name} - Fatura nº${data.id_invoice}`,
+            html: html,
+          };
+
+          transporter.sendMail(mailOptions, (err, info) => {
+            if (err) resolve(err);
+            resolve(info);
+            conn.release();
+          });
+        } catch (err) {
+          resolve(err);
+          conn.release();
+        }
       });
     });
   },

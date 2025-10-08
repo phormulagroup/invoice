@@ -20,13 +20,9 @@ const Main = () => {
   });
   const [items] = useState([
     getItem("Faturas", "/app", <FileOutlined />),
-    getItem("Utilizadores", "/app/users", <UserOutlined />),
     getItem("E-mail", "/app/email", <MailOutlined />),
+    getItem("Utilizadores", "/app/users", <UserOutlined />),
   ]);
-  const [apiNotification, contextHolder] = notification.useNotification({
-    stack: true,
-    threshold: 3,
-  });
 
   const navigate = useNavigate();
 
@@ -79,7 +75,6 @@ const Main = () => {
 
   return (
     <Layout>
-      {contextHolder}
       <Header className="p-[0px_20px] bg-[#FFF] shadow-lg flex justify-between items-center">
         <div className="flex justify-start items-center w-full">
           <img src={logo} className="h-8 mr-4" />

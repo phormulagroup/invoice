@@ -89,6 +89,7 @@ const Home = () => {
                     title: "Data",
                     dataIndex: "created_at",
                     key: "created_at",
+                    width: 200,
                     sort: true,
                     sortType: "date",
                   },
@@ -104,6 +105,7 @@ const Home = () => {
                     title: "Domínio",
                     dataIndex: "domain",
                     key: "domain",
+                    width: 200,
                     filters: data
                       .map((item, index) => ({ text: item.domain, value: item.domain }))
                       .filter((value, index, self) => index === self.findIndex((t) => t.value === value.text)),
@@ -146,11 +148,6 @@ const Home = () => {
                     title: "Fatura",
                     dataIndex: "link",
                     key: "link",
-                  },
-                  {
-                    title: "",
-                    dataIndex: "actions",
-                    key: "actions",
                   },
                 ]}
               />

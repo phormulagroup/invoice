@@ -18,6 +18,8 @@ const endpoints = {
     create: "/email/create",
     update: "/email/update",
     delete: "/email/delete",
+    test: "/email/test",
+    default: "/email/default",
   },
   media: {
     read: "/media/read",

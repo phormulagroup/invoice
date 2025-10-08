@@ -16,7 +16,7 @@ function Upload({ open, close, key }) {
   const [form] = Form.useForm();
 
   const props = {
-    accept: "image/png, image/jpeg",
+    accept: "image/png, image/jpeg, .svg",
     name: "file",
     multiple: true,
     action: config.server_ip + endpoints.media.singleUpload,
