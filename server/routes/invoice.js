@@ -42,6 +42,7 @@ router.post("/create", async (req, res) => {
     try {
       if (
         utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) &&
+        data.order.total > 0 &&
         data.order.billing.email &&
         data.order.billing.first_name &&
         data.domain &&

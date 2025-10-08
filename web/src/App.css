@@ -24,3 +24,8 @@
 .ant-btn-color-primary {
   box-shadow: none !important;
 }
+
+.ant-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+}

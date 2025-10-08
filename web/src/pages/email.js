@@ -1,20 +1,17 @@
-import { Avatar, Button, Col, Divider, Dropdown, Empty, Form, Row, Segmented, Select, Spin } from "antd";
+import { Button, Col, Empty, Row, Spin } from "antd";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import endpoints from "../utils/endpoints";
-import dayjs from "dayjs";
-import { DeleteOutlined, EditOutlined, LinkOutlined, LoadingOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
+
+import { DeleteOutlined, EditOutlined, LoadingOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import Table from "../components/table";
 
+import Create from "../components/email/create";
+import Update from "../components/email/update";
+import Delete from "../components/email/delete";
 import config from "../utils/config";
-import { useNavigate } from "react-router-dom";
-import { Context } from "../utils/context";
-import Create from "../components/user/create";
-import Update from "../components/user/update";
-import Delete from "../components/user/delete";
 
-const Users = () => {
-  const { user } = useContext(Context);
+const Email = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -31,11 +28,10 @@ const Users = () => {
   function handleGetData() {
     setIsLoading(true);
     axios
-      .get(endpoints.user.read)
+      .get(endpoints.email.read)
       .then((res) => {
         console.log(res);
         handlePrepareData(res.data);
-        setData(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -43,35 +39,30 @@ const Users = () => {
       });
   }
 
-  function handlePrepareData(data) {
-    let aux = data.map((item, index) => ({
+  function handlePrepareData(arr) {
+    let aux = arr.map((item, index) => ({
       key: index,
+      img: <div className="bg-center bg-no-repeat bg-contain h-[80px] w-[150px]" style={{ backgroundImage: `url(${config.server_ip}/media/${item.img})` }}></div>,
       domain: item.domain,
       name: item.name,
+      host: item.host,
+      secure: item.secure,
       email: item.email,
-      nif: item.nif,
-      invoice_id: item.invoice_id,
-      link: (
-        <a href={item.link} target="_blank" rel="noreferrer" className="text-blue-500">
-          <Button>
-            <LinkOutlined />
-          </Button>
-        </a>
-      ),
-      actions: user.is_admin ? (
+      password: item.password ? "**********" : null,
+      actions: (
         <div className="flex justify-end items-center">
           <Button onClick={() => handleOpenUpdate(item)}>
             <EditOutlined /> Editar
           </Button>
-          {item.email !== "@master" ? (
-            <Button danger className="ml-[10px]" onClick={() => handleOpenDelete(item)}>
-              <DeleteOutlined /> Apagar
-            </Button>
-          ) : null}
+          <Button danger className="ml-[10px]" onClick={() => handleOpenDelete(item)}>
+            <DeleteOutlined /> Apagar
+          </Button>
         </div>
-      ) : null,
+      ),
+      full_data: item,
     }));
 
+    setData(arr);
     setTableData(aux);
     setIsLoading(false);
   }
@@ -116,7 +107,7 @@ const Users = () => {
         <div className="max-h-[calc(100vh-104px)] h-full bg-[#FFF] p-[40px] rounded-[5px] shadow-lg">
           <div className="flex justify-between items-center">
             <div className="flex justify-center items-center">
-              <p className="text-[22px] font-bold">Utilizadores</p>
+              <p className="text-[22px] font-bold">E-mails</p>
             </div>
             <div className="flex justify-center items-center">
               <Button onClick={handleGetData}>
@@ -135,21 +126,48 @@ const Users = () => {
                 className="mt-[20px]"
                 columns={[
                   {
+                    title: "",
+                    dataIndex: "img",
+                    key: "img",
+                  },
+                  {
+                    title: "Domínio",
+                    dataIndex: "domain",
+                    key: "domain",
+                    width: 250,
+                    filters: data
+                      .map((item, index) => ({ text: item.domain, value: item.domain }))
+                      .filter((value, index, self) => index === self.findIndex((t) => t.value === value.text)),
+                  },
+                  {
                     title: "Nome",
                     dataIndex: "name",
                     key: "name",
-                    width: 400,
-                    sort: true,
-                    sortType: "text",
-                    search: "name",
+                  },
+                  {
+                    title: "Host",
+                    dataIndex: "host",
+                    key: "host",
+                  },
+                  {
+                    title: "Port",
+                    dataIndex: "port",
+                    key: "port",
+                  },
+                  {
+                    title: "Secure",
+                    dataIndex: "secure",
+                    key: "secure",
                   },
                   {
                     title: "E-mail",
                     dataIndex: "email",
                     key: "email",
-                    sort: true,
-                    sortType: "text",
-                    search: "email",
+                  },
+                  {
+                    title: "Password",
+                    dataIndex: "password",
+                    key: "password",
                   },
                   {
                     title: "",
@@ -159,7 +177,7 @@ const Users = () => {
                 ]}
               />
             ) : (
-              <Empty description="Sem faturas" className="mt-[20px]" />
+              <Empty description="Sem e-mails" className="mt-[20px]" />
             )}
           </Spin>
         </div>
@@ -168,4 +186,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Email;

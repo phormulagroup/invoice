@@ -1,22 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  DashboardOutlined,
-  DownOutlined,
-  FileOutlined,
-  HomeOutlined,
-  LaptopOutlined,
-  LogoutOutlined,
-  MenuOutlined,
-  NotificationOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { Avatar, Badge, Breadcrumb, Button, Divider, Drawer, Dropdown, Layout, Menu, message, notification, theme } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { FileOutlined, LogoutOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Layout, Menu, notification } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 
-import endpoints from "../utils/endpoints";
-import config from "../utils/config";
 import { Context } from "../utils/context";
 
 import logo from "../assets/phormula-logo.svg";
@@ -32,7 +18,11 @@ const Main = () => {
     width: window.innerWidth,
     height: window.innerHeight,
   });
-  const [items] = useState([getItem("Faturas", "/app", <FileOutlined />), getItem("Utilizadores", "/app/users", <UserOutlined />)]);
+  const [items] = useState([
+    getItem("Faturas", "/app", <FileOutlined />),
+    getItem("Utilizadores", "/app/users", <UserOutlined />),
+    getItem("E-mail", "/app/email", <MailOutlined />),
+  ]);
   const [apiNotification, contextHolder] = notification.useNotification({
     stack: true,
     threshold: 3,

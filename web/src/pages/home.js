@@ -67,7 +67,7 @@ const Home = () => {
   return (
     <Row className="user-content">
       <Col span={24}>
-        <div className="min-h-[calc(100vh-104px)] bg-[#FFF] p-[40px] rounded-[5px] shadow-lg">
+        <div className="max-h-[calc(100vh-104px)] h-full bg-[#FFF] p-[40px] rounded-[5px] shadow-lg">
           <div className="flex justify-between items-center">
             <div className="flex justify-center items-center">
               <p className="text-[22px] font-bold">Faturas</p>

@@ -1,7 +1,7 @@
-import { Avatar, Button, Col, Divider, Empty, Form, Input, Row, Select, Space, Spin, Table, Tag, Tooltip } from "antd";
+import { Button, Input, Space, Table } from "antd";
 
-import React, { useRef, useState } from "react";
-import { CloseCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { useRef, useState } from "react";
+import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 
 const CustomTable = (props) => {
@@ -90,7 +90,7 @@ const CustomTable = (props) => {
       className={props.className}
       dataSource={props.dataSource}
       pagination={{ position: ["none", "bottomCenter"] }}
-      scroll={{ x: 50 }}
+      scroll={{ y: 120 * 5, x: "max-content" }}
       columns={props.columns.map((item) => ({
         title: item.title,
         dataIndex: item.dataIndex,

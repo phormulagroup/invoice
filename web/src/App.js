@@ -1,28 +1,22 @@
-import { Routes, Route, Navigate, useNavigate, BrowserRouter, useLocation } from "react-router-dom";
-import { createContext, useEffect, useReducer, useState } from "react";
-import { ConfigProvider, notification, Spin } from "antd";
-import axios from "axios";
-import dayjs from "dayjs";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ConfigProvider } from "antd";
 import { useContext } from "react";
 
 import api from "./utils/api";
-
-import Login from "./pages/login";
-import Main from "./layout/main";
-
-import Home from "./pages/home";
+import { Context } from "./utils/context";
 
 import Loading from "./layout/loading";
+import Main from "./layout/main";
 
-import endpoints from "./utils/endpoints";
-import { Context } from "./utils/context";
-import Register from "./pages/register";
+import Login from "./pages/login";
+import Home from "./pages/home";
 import Users from "./pages/users";
+import Email from "./pages/email";
 
 api.axiosCreate();
 
 function App() {
-  const { user, isLoggedIn, isLoading } = useContext(Context);
+  const { isLoggedIn, isLoading } = useContext(Context);
 
   return (
     <ConfigProvider
@@ -40,6 +34,7 @@ function App() {
           <Route element={<Main />}>
             <Route exact path="/app/" element={<Home />} />
             <Route exact path="/app/users" element={<Users />} />
+            <Route exact path="/app/email" element={<Email />} />
           </Route>
         </Routes>
       ) : (

@@ -10,6 +10,8 @@ const db = require("./utils/database");
 const authRouter = require("./routes/auth");
 const invoiceRouter = require("./routes/invoice");
 const userRouter = require("./routes/user");
+const emailRouter = require("./routes/email");
+const mediaRouter = require("./routes/media");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -55,8 +57,12 @@ app.get("/", async (req, res) => {
   res.send("INVOICE API!");
 });
 
+app.use("/media", express.static("media"));
+
 app.use("/auth", authRouter);
 app.use("/invoice", invoiceRouter);
 app.use("/user", userRouter);
+app.use("/email", emailRouter);
+app.use("/media", mediaRouter);
 
 module.exports = app;
