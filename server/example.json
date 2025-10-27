@@ -63,7 +63,7 @@
     "meta_data": [
       { "id": 1323, "key": "_billing_address_index", "value": "Nuno sIMOES Rua Horizonte 1073 São Romão Coronado 4745-531 PT Nuno.simoes@phormulagroup.com +351916673019" },
       { "id": 1324, "key": "_shipping_address_index", "value": "Nuno sIMOES Rua Horizonte 1073 São Romão Coronado 4745-531 PT +351916673019" },
-      { "id": 1326, "key": "_billing_nif", "value": "235270199" },
+      { "id": 1326, "key": "_billing_nif", "value": "99" },
       { "id": 1325, "key": "_edit_lock", "value": "1758208330:1" },
       { "id": 1327, "key": "_wc_order_attribution_source_type", "value": "admin" }
     ],

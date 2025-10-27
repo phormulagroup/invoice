@@ -97,6 +97,7 @@ const Home = () => {
                     title: "Empresa",
                     dataIndex: "company",
                     key: "company",
+                    width: 200,
                     filters: data
                       .map((item, index) => ({ text: item.company, value: item.company }))
                       .filter((value, index, self) => index === self.findIndex((t) => t.value === value.text)),

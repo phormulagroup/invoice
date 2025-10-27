@@ -6,7 +6,7 @@ var router = express.Router();
 
 var db = require("../utils/database");
 const utils = require("../utils/utils");
-
+const exampleData = require("../example.json");
 const tocOnline = require("../utils/credentials");
 
 router.use((req, res, next) => {
@@ -37,18 +37,10 @@ router.post("/create", async (req, res) => {
   console.log("----- CREATE INVOICE -----");
   db.getConnection(async (error, conn) => {
     if (error) throw error;
-    //const data = req.body?.data ?? exampleData;
+    //const data = exampleData;
     const data = req.body;
     try {
-      if (
-        utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) &&
-        data.order.total > 0 &&
-        data.order.billing.email &&
-        data.order.billing.first_name &&
-        data.domain &&
-        data.company &&
-        data.items.length > 0
-      ) {
+      if (data.order.total > 0 && data.order.billing.email && data.order.billing.first_name && data.domain && data.company && data.items.length > 0) {
         console.log("Domain:", data.domain ?? "no domain");
         console.log("E-mail:", data.order.billing.email ?? "no e-mail");
         console.log("Name:", data.order.billing.first_name + " " + data.order.billing.last_name ?? "no name");
