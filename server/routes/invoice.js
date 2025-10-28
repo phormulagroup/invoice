@@ -105,4 +105,16 @@ router.post("/create", async (req, res) => {
   });
 });
 
+router.get("/getInvoiceLink", async (req, res) => {
+  console.log("-------------------------------");
+  console.log("----- READ INVOICES -----");
+  try {
+    const token = await utils.auth(tocOnline[req.query.company]);
+    let invoice = await utils.getinvoices(token.access_token, tocOnline[req.query.company], req.query);
+    res.send(invoice);
+  } catch (err) {
+    throw err;
+  }
+});
+
 module.exports = router;

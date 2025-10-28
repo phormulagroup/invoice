@@ -218,4 +218,44 @@ module.exports = {
       });
     });
   },
+
+  //Create Invoice
+  getLink: function (token, c, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.get(`${c.BASE_URL}/api/v1/commercial_sales_documents/${data.id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        resolve(response.data);
+      } catch (err) {
+        console.log(err);
+        reject(err);
+      }
+    });
+  },
+
+  //Create Invoice
+  getinvoices: function (token, c, data) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await axios.get(`${c.BASE_URL}/api/v1/commercial_sales_documents`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        });
+
+        resolve(response.data);
+      } catch (err) {
+        console.log(err);
+        reject(err);
+      }
+    });
+  },
 };
