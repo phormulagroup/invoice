@@ -58,7 +58,7 @@ router.post("/create", async (req, res) => {
           domain: data.domain,
           email: data.order.billing.email,
           name: data.order.billing.first_name + " " + data.order.billing.last_name,
-          nif: data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value ?? "999999990",
+          nif: data.order.meta_data.filter((m) => m.key === "_billing_nif" || m.key === "_billing_vat")[0]?.value ?? "999999990",
           invoice_id: finalInvoice.id,
           link: finalInvoice.public_link,
         };
@@ -92,8 +92,8 @@ router.post("/create", async (req, res) => {
         console.log("Name:", data.order.billing.first_name + " " + data.order.billing.last_name ?? "no name");
         console.log(
           "NIF:",
-          data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value ?? "no nif",
-          `${utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value) ? "(valid)" : "(invalid)"}`
+          data.order.meta_data.filter((m) => m.key === "_billing_nif" || m.key === "_billing_vat")[0]?.value ?? "no nif",
+          `${utils.validaNIF(data.order.meta_data.filter((m) => m.key === "_billing_nif" || m.key === "_billing_vat")[0]?.value) ? "(valid)" : "(invalid)"}`,
         );
         console.log("Total:", data.order.total ?? "no total");
         console.log("-------------------------------");

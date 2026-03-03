@@ -90,8 +90,8 @@ module.exports = {
           document_type: "FR",
           date: dayjs().format("YYYY-MM-DD"),
           finalize: 0,
-          customer_tax_registration_number: this.validaNIF(obj.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value)
-            ? obj.order.meta_data.filter((m) => m.key === "_billing_nif")[0]?.value
+          customer_tax_registration_number: this.validaNIF(obj.order.meta_data.filter((m) => m.key === "_billing_nif" || m.key === "_billing_vat")[0]?.value)
+            ? obj.order.meta_data.filter((m) => m.key === "_billing_nif" || m.key === "_billing_vat")[0]?.value
             : null,
           customer_business_name: obj.order.billing.first_name + " " + obj.order.billing.last_name,
           date: dayjs().format("YYYY-MM-DD"),
